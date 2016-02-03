@@ -8,6 +8,45 @@
 
 package gov.nih.nci.security.dao;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.security.Principal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.security.auth.Subject;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.PropertyValueException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.GenericJDBCException;
+import org.hibernate.jdbc.ReturningWork;
+
 /**
  *
  *<!-- LICENSE_TEXT_START -->
@@ -120,46 +159,8 @@ import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.util.ObjectUpdater;
 import gov.nih.nci.security.util.StringEncrypter;
-import gov.nih.nci.security.util.StringUtilities;
 import gov.nih.nci.security.util.StringEncrypter.EncryptionException;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.security.Principal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.security.auth.Subject;
-
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.PropertyValueException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Example;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.exception.GenericJDBCException;
-
-import org.apache.log4j.Logger;
+import gov.nih.nci.security.util.StringUtilities;
 
 /**
  * @version 1.0 created 03-Dec-2004 1:17:47 AM
@@ -1059,7 +1060,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			
 
 			String application_id = this.application.getApplicationId()
@@ -1171,7 +1178,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 		try {
 
 			session = HibernateSessionFactoryHelper.getAuditSession(sf);
-			connection = session.connection();
+			connection = session.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			String application_id = this.application.getApplicationId().toString();
 			String sql = Queries.getQueryForCheckPermissionForOnlyGroup(groupName, objectId, attributeName, privilegeName, application_id);
 			statement = connection.createStatement();
@@ -1233,7 +1246,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 		try {
 
 			session = HibernateSessionFactoryHelper.getAuditSession(sf);
-			connection = session.connection();
+			connection = session.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			String application_id = this.application.getApplicationId().toString();
 			String sql = Queries.getQueryForCheckPermissionForOnlyGroup(groupName, objectId, privilegeName, application_id);
 			statement = connection.createStatement();
@@ -1298,7 +1317,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 		{
 
 			session = HibernateSessionFactoryHelper.getAuditSession(sf);
-			connection = session.connection();
+			connection = session.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			String application_id = this.application.getApplicationId().toString();
 			String sql = null;
 			if (null == attributeName)
@@ -1347,7 +1372,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 
 			String application_id = this.application.getApplicationId()
 					.toString();
@@ -1416,7 +1447,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 
 			String application_id = this.application.getApplicationId()
 					.toString();
@@ -1486,7 +1523,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 			}
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			String application_id = this.application.getApplicationId()
 					.toString();
 			String sql = Queries.getQueryForCheckPermissionForGroup(userName,
@@ -2106,7 +2149,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 			t = s.beginTransaction();
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			String sql = "delete from csm_user_group_role_pg where protection_group_id=? and group_id=?";
 			PreparedStatement pstmt = cn.prepareStatement(sql);
 			Long pg_id = new Long(protectionGroupId);
@@ -2355,7 +2404,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 			t = s.beginTransaction();
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			String sql = "delete from csm_user_group_role_pg where protection_group_id=? and user_id=?";
 			PreparedStatement pstmt = cn.prepareStatement(sql);
 			Long pg_id = new Long(protectionGroupId);
@@ -3227,7 +3282,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 			
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 
 			StringBuffer stbr = new StringBuffer();
 			stbr.append("SELECT distinct ugrp.protection_group_id "); 
@@ -3335,7 +3396,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 			
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 
 
 			StringBuffer stbr = new StringBuffer();
@@ -3451,7 +3518,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 		try {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			stmt = cn.createStatement();
 
 			String sql = Queries.getQueryforUserPEPrivilegeMap(userId, this.application.getApplicationId().toString());
@@ -3585,7 +3658,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 		try {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			stmt = cn.createStatement();
 
 			String sql = Queries.getQueryforGroupPEPrivilegeMap(groupId, this.application.getApplicationId().toString());
@@ -4161,7 +4240,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 
 			String application_id = this.application.getApplicationId().toString();
 			String sql = Queries.getQueryForObjectMap(loginName,objectTypeName,privilegeName,application_id);
@@ -4528,7 +4613,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 
 			StringBuffer stbr = new StringBuffer();
 			stbr
@@ -4611,7 +4702,13 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 
 			s = HibernateSessionFactoryHelper.getAuditSession(sf);
 
-			cn = s.connection();
+			cn = s.doReturningWork(new ReturningWork<Connection>() 
+			{
+			    @Override
+			    public Connection execute(Connection conn) throws SQLException {
+			    return conn;
+			    }
+			});
 			
 
 			StringBuffer stbr = new StringBuffer();

@@ -8,7 +8,7 @@
    See http://ncip.github.com/common-security-module/LICENSE.txt for details.
 L-->
 
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping default-lazy="false">
 	<class name="gov.nih.nci.security.authorization.domainobjects.Application" table="CSM_APPLICATION">
