@@ -1348,6 +1348,16 @@ public class AuthorizationDAOImpl implements AuthorizationDAO {
 		catch (Exception e) {
 			throw new CSException("Attribute can't be null!");
 		}
+		finally {
+		  try
+          {
+            connection.close();
+          }
+          catch (Exception e)
+          {
+            e.printStackTrace();
+          }
+        }
 		
 		
 		for (int i = 0; i < groupIds.size(); i++) {
